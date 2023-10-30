@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.17",
     "@near-wallet-selector/core": "^8.7.0",
     "@near-wallet-selector/ledger": "^8.7.0",
     "@near-wallet-selector/modal-ui": "^8.7.0",

@@ -1,4 +1,5 @@
 import { useWalletSelector } from "@/contexts/WalletSelectorContext";
+import { Switch } from "@headlessui/react";
 import { parseNearAmount } from "near-api-js/lib/utils/format";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -56,7 +57,7 @@ export default function Home() {
         ? "multisignature.testnet"
         : "multisignature.near";
     const wallet = await selector.wallet();
-
+    const threshold = new Number(data.threshold);
     await wallet.signAndSendTransactions({
       transactions: [
         {
@@ -69,7 +70,7 @@ export default function Home() {
                 args: {
                   name: data.accountId,
                   members: data.signers,
-                  num_confirmations: data.threshold,
+                  num_confirmations: threshold,
                 },
                 gas: "300000000000000",
                 deposit: parseNearAmount("5")!,
@@ -82,53 +83,89 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col p-10">
-      <div className="flex justify-end">
-        <div className="">
+    <main className="flex min-h-screen flex-col p-10 bg-gray-50">
+      <div className="flex justify-end items-center space-x-4">
+        {!accountId ? (
           <div
-            className={`flex ${!accountId ? "" : "hidden"}`}
             onClick={handleSignIn}
+            className="bg-blue-500 text-white py-1 px-3 rounded"
           >
             Sign In
           </div>
+        ) : (
           <div
-            className={`flex ${!accountId ? "hidden" : ""}`}
             onClick={handleSignOut}
+            className="bg-red-500 text-white py-1 px-3 rounded"
           >
             Sign Out
           </div>
-          {/* Network Toggle */}
-          <div className="mt-2 flex flex-col">
-            Current Network: {currentNetwork}
-          </div>
-          <div className="flex flex-col gap-1">
-            Switch Network:
-            <button onClick={() => onSwitchNetwork("testnet")}>Testnet</button>
-            <button onClick={() => onSwitchNetwork("mainnet")}>Mainnet</button>
-          </div>
+        )}
+
+        <div className="mt-2">
+          <Switch.Group>
+            <Switch.Label className="mr-4">
+              Current Network: {currentNetwork}
+            </Switch.Label>
+            <Switch
+              checked={currentNetwork === "testnet"}
+              onChange={() =>
+                onSwitchNetwork(
+                  currentNetwork === "testnet" ? "mainnet" : "testnet"
+                )
+              }
+              className={`${
+                currentNetwork === "testnet" ? "bg-blue-600" : "bg-gray-200"
+              } 
+                relative inline-flex items-center h-6 rounded-full w-11`}
+            >
+              <span className="sr-only">Toggle Network</span>
+              <span
+                className={`${
+                  currentNetwork === "testnet"
+                    ? "translate-x-6"
+                    : "translate-x-1"
+                } 
+                inline-block w-4 h-4 transform bg-white rounded-full`}
+              />
+            </Switch>
+          </Switch.Group>
         </div>
       </div>
 
-      <div className="flex justify-center w-full px-10">
+      <div className="mt-8 flex justify-center w-full px-10">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="w-full gap-3 flex flex-col"
+          className="w-full max-w-md gap-4 p-6 bg-white shadow-md rounded-md flex flex-col"
         >
-          <div>
-            <label htmlFor="accountId">Account ID:</label>
-            <input id="accountId" {...register("accountId")} required />
+          <div className="flex flex-col">
+            <label htmlFor="accountId" className="mb-1 text-gray-600">
+              Account ID:
+            </label>
+            <input
+              id="accountId"
+              {...register("accountId")}
+              required
+              className="border rounded p-2"
+            />
           </div>
-          <div>
-            <label htmlFor="threshold">Threshold:</label>
+
+          <div className="flex flex-col">
+            <label htmlFor="threshold" className="mb-1 text-gray-600">
+              Threshold:
+            </label>
             <input
               id="threshold"
               type="number"
               {...register("threshold")}
               required
+              className="border rounded p-2"
             />
           </div>
-          <div>
-            <label htmlFor="signers">Signers:</label>
+
+          <div className="flex flex-col">
+            <label htmlFor="signers" className="mb-1 text-gray-600">
+              Signers:
+            </label>
             <Controller
               name="signers"
               control={control}
@@ -141,6 +178,8 @@ export default function Home() {
               render={({ field }) => (
                 <textarea
                   {...field}
+                  rows={4}
+                  className="border rounded p-2"
                   placeholder="Enter signers separated by comma or new line"
                   onChange={(e) =>
                     field.onChange(e.target.value.split(/,\s*|\n+/))
@@ -148,10 +187,20 @@ export default function Home() {
                 />
               )}
             />
-            {errors.signers && <span>{errors.signers.message}</span>}
+            {errors.signers && (
+              <span className="text-red-500 mt-1">
+                {errors.signers.message}
+              </span>
+            )}
           </div>
-          <div>
-            <button type="submit">Create Multisig Wallet</button>
+
+          <div className="mt-4">
+            <button
+              type="submit"
+              className="bg-green-500 text-white py-2 px-4 rounded"
+            >
+              Create Multisig Wallet
+            </button>
           </div>
         </form>
       </div>
