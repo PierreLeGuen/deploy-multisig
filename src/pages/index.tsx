@@ -148,12 +148,21 @@ export default function Home() {
             </label>
             <input
               id="accountId"
-              {...register("accountId")}
-              required
+              {...register("accountId", {
+                required: "Account ID is required",
+                pattern: {
+                  value: /^[a-z]+$/,
+                  message: "Account ID can only contain letters (a-z)",
+                },
+              })}
               className="border rounded p-2"
             />
-            {/* Account created: */}
-            {watchedAccountId ? (
+            {errors.accountId && (
+              <span className="text-red-500 mt-1">
+                {errors.accountId.message}
+              </span>
+            )}
+            {watchedAccountId && !errors.accountId ? (
               <div>
                 AccountID preview: {watchedAccountId}.multisignature.near
               </div>
