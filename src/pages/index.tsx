@@ -1,5 +1,6 @@
 import { useWalletSelector } from "@/contexts/WalletSelectorContext";
 import { Switch } from "@headlessui/react";
+import { NetworkId } from "@near-wallet-selector/core";
 import { parseNearAmount } from "near-api-js/lib/utils/format";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -11,7 +12,8 @@ type MultisigForm = {
 };
 
 export default function Home() {
-  const { selector, modal, accounts, accountId } = useWalletSelector();
+  const { selector, modal, accounts, accountId, setNetwork } =
+    useWalletSelector();
   const {
     control,
     handleSubmit,
@@ -22,9 +24,10 @@ export default function Home() {
   } = useForm<MultisigForm>();
 
   // State for current network
-  const [currentNetwork, setCurrentNetwork] = useState("testnet");
+  const [currentNetwork, setCurrentNetwork] = useState("mainnet");
 
   const handleSignIn = () => {
+    setNetwork(currentNetwork as NetworkId);
     modal.show();
   };
 
@@ -106,7 +109,7 @@ export default function Home() {
             <Switch.Label className="mr-4">
               Current Network: {currentNetwork}
             </Switch.Label>
-            <Switch
+            {/* <Switch
               checked={currentNetwork === "testnet"}
               onChange={() =>
                 onSwitchNetwork(
@@ -127,7 +130,7 @@ export default function Home() {
                 } 
                 inline-block w-4 h-4 transform bg-white rounded-full`}
               />
-            </Switch>
+            </Switch> */}
           </Switch.Group>
         </div>
       </div>

@@ -1,8 +1,13 @@
-import type { AccountState, WalletSelector } from "@near-wallet-selector/core";
+import type {
+  AccountState,
+  NetworkId,
+  WalletSelector,
+} from "@near-wallet-selector/core";
 import { setupWalletSelector } from "@near-wallet-selector/core";
 import { setupLedger } from "@near-wallet-selector/ledger";
 import type { WalletSelectorModal } from "@near-wallet-selector/modal-ui";
 import { setupModal } from "@near-wallet-selector/modal-ui";
+import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 
 import type { ReactNode } from "react";
 import React, {
@@ -16,8 +21,7 @@ import { distinctUntilChanged, map } from "rxjs";
 
 import { Loading } from "../components/Loading";
 
-const CONTRACT_ID = "multisignature.testnet";
-const NETWORK = "testnet";
+const CONTRACT_ID = "multisignature.near";
 
 declare global {
   interface Window {
@@ -31,6 +35,7 @@ interface WalletSelectorContextValue {
   modal: WalletSelectorModal;
   accounts: Array<AccountState>;
   accountId: string | null;
+  setNetwork: (network: NetworkId) => void;
 }
 
 const WalletSelectorContext =
@@ -43,12 +48,15 @@ export const WalletSelectorContextProvider: React.FC<{
   const [modal, setModal] = useState<WalletSelectorModal | null>(null);
   const [accounts, setAccounts] = useState<Array<AccountState>>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [network, setNetwork] = useState<NetworkId>("mainnet");
 
   const init = useCallback(async () => {
+    console.log("Initialising wallet selector for network", network);
+
     const _selector = await setupWalletSelector({
-      network: NETWORK,
+      network: network,
       debug: true,
-      modules: [setupLedger()],
+      modules: [setupLedger(), setupMyNearWallet()],
     });
     const _modal = setupModal(_selector, {
       contractId: CONTRACT_ID,
@@ -64,7 +72,7 @@ export const WalletSelectorContextProvider: React.FC<{
     setSelector(_selector);
     setModal(_modal);
     setLoading(false);
-  }, []);
+  }, [network]);
 
   useEffect(() => {
     init().catch((err) => {
@@ -105,8 +113,9 @@ export const WalletSelectorContextProvider: React.FC<{
       modal: modal!,
       accounts,
       accountId: accounts.find((account) => account.active)?.accountId || null,
+      setNetwork,
     }),
-    [selector, modal, accounts]
+    [selector, modal, accounts, setNetwork]
   );
 
   if (loading) {
