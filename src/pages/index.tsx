@@ -26,6 +26,7 @@ export default function Home() {
   // State for current network
   const [currentNetwork, setCurrentNetwork] = useState("mainnet");
   const [rawSigners, setRawSigners] = useState("");
+  const watchedAccountId = watch("accountId");
 
   const handleSignIn = () => {
     setNetwork(currentNetwork as NetworkId);
@@ -151,11 +152,17 @@ export default function Home() {
               required
               className="border rounded p-2"
             />
+            {/* Account created: */}
+            {watchedAccountId ? (
+              <div>
+                AccountID preview: {watchedAccountId}.multisignature.near
+              </div>
+            ) : null}
           </div>
 
           <div className="flex flex-col">
             <label htmlFor="threshold" className="mb-1 text-gray-600">
-              Threshold:
+              Number of confirmations required:
             </label>
             <input
               id="threshold"
