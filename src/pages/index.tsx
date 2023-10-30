@@ -25,6 +25,7 @@ export default function Home() {
 
   // State for current network
   const [currentNetwork, setCurrentNetwork] = useState("mainnet");
+  const [rawSigners, setRawSigners] = useState("");
 
   const handleSignIn = () => {
     setNetwork(currentNetwork as NetworkId);
@@ -181,12 +182,22 @@ export default function Home() {
               render={({ field }) => (
                 <textarea
                   {...field}
+                  value={rawSigners} // Set the raw value here
                   rows={4}
                   className="border rounded p-2"
                   placeholder="Enter signers separated by comma or new line"
-                  onChange={(e) =>
-                    field.onChange(e.target.value.split(/,\s*|\n+/))
-                  }
+                  onChange={(e) => {
+                    setRawSigners(e.target.value); // Update the raw value
+                    const signers = [
+                      ...new Set(
+                        e.target.value
+                          .split(/,\s*|\n+/)
+                          .map((signer) => signer.trim())
+                          .filter(Boolean)
+                      ),
+                    ];
+                    field.onChange(signers); // Set the processed value for the form
+                  }}
                 />
               )}
             />
