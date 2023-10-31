@@ -1,3 +1,4 @@
+import { GetPublicKey } from "@/components/GetPublicKey";
 import { useWalletSelector } from "@/contexts/WalletSelectorContext";
 import { Switch } from "@headlessui/react";
 import { NetworkId } from "@near-wallet-selector/core";
@@ -88,7 +89,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col p-10 bg-gray-50">
+    <main className="flex min-h-screen flex-col p-10 bg-gray-50 gap-8">
       <div className="flex justify-end items-center space-x-4">
         {!accountId ? (
           <div
@@ -111,37 +112,16 @@ export default function Home() {
             <Switch.Label className="mr-4">
               Current Network: {currentNetwork}
             </Switch.Label>
-            {/* <Switch
-              checked={currentNetwork === "testnet"}
-              onChange={() =>
-                onSwitchNetwork(
-                  currentNetwork === "testnet" ? "mainnet" : "testnet"
-                )
-              }
-              className={`${
-                currentNetwork === "testnet" ? "bg-blue-600" : "bg-gray-200"
-              } 
-                relative inline-flex items-center h-6 rounded-full w-11`}
-            >
-              <span className="sr-only">Toggle Network</span>
-              <span
-                className={`${
-                  currentNetwork === "testnet"
-                    ? "translate-x-6"
-                    : "translate-x-1"
-                } 
-                inline-block w-4 h-4 transform bg-white rounded-full`}
-              />
-            </Switch> */}
           </Switch.Group>
         </div>
       </div>
 
-      <div className="mt-8 flex justify-center w-full px-10">
+      <div className="flex justify-center w-full px-10">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="w-full max-w-md gap-4 p-6 bg-white shadow-md rounded-md flex flex-col"
+          className="w-full max-w-xl gap-4 p-6 bg-white shadow-md rounded-md flex flex-col"
         >
+          <h1 className="text-lg font-bold">Create new multisig wallet</h1>
           <div className="flex flex-col">
             <label htmlFor="accountId" className="mb-1 text-gray-600">
               Account ID:
@@ -184,7 +164,7 @@ export default function Home() {
 
           <div className="flex flex-col">
             <label htmlFor="signers" className="mb-1 text-gray-600">
-              Signers:
+              Members:
             </label>
             <Controller
               name="signers"
@@ -201,7 +181,7 @@ export default function Home() {
                   value={rawSigners} // Set the raw value here
                   rows={4}
                   className="border rounded p-2"
-                  placeholder="Enter signers separated by comma or new line"
+                  placeholder="Enter the Ledger public key for each member, separated by a comma or a new line."
                   onChange={(e) => {
                     setRawSigners(e.target.value); // Update the raw value
                     const signers = [
@@ -224,15 +204,18 @@ export default function Home() {
             )}
           </div>
 
-          <div className="mt-4">
-            <button
-              type="submit"
-              className="bg-green-500 text-white py-2 px-4 rounded"
-            >
-              Create Multisig Wallet
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="bg-green-500 text-white py-2 px-4 rounded"
+          >
+            Create Multisig Wallet
+          </button>
         </form>
+      </div>
+      <div className="flex justify-center w-full px-10">
+        <div className="w-full max-w-xl gap-4 p-6 bg-white shadow-md rounded-md flex flex-col">
+          <GetPublicKey />
+        </div>
       </div>
     </main>
   );
