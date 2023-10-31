@@ -91,22 +91,6 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col p-10 bg-gray-50 gap-8">
       <div className="flex justify-end items-center space-x-4">
-        {!accountId ? (
-          <div
-            onClick={handleSignIn}
-            className="bg-blue-500 text-white py-1 px-3 rounded"
-          >
-            Sign In
-          </div>
-        ) : (
-          <div
-            onClick={handleSignOut}
-            className="bg-red-500 text-white py-1 px-3 rounded"
-          >
-            Sign Out
-          </div>
-        )}
-
         <div className="mt-2">
           <Switch.Group>
             <Switch.Label className="mr-4">
@@ -122,9 +106,26 @@ export default function Home() {
           className="w-full max-w-xl gap-4 p-6 bg-white shadow-md rounded-md flex flex-col"
         >
           <h1 className="text-lg font-bold">Create new multisig wallet</h1>
+          <div>Funding account:</div>
+          {!accountId ? (
+            <button
+              onClick={handleSignIn}
+              className={`bg-green-500 text-center text-white py-2 px-4 rounded`}
+            >
+              Sign in your NEAR account
+            </button>
+          ) : (
+            <button
+              onClick={handleSignOut}
+              className="bg-orange-500 text-center text-white py-2 px-4 rounded"
+            >
+              Sign Out
+            </button>
+          )}
+          {accountId ? <div>Currently connected to: {accountId}</div> : null}
           <div className="flex flex-col">
             <label htmlFor="accountId" className="mb-1 text-gray-600">
-              Account ID:
+              Multisig account ID:
             </label>
             <input
               id="accountId"
@@ -148,7 +149,6 @@ export default function Home() {
               </div>
             ) : null}
           </div>
-
           <div className="flex flex-col">
             <label htmlFor="threshold" className="mb-1 text-gray-600">
               Number of confirmations required:
@@ -161,7 +161,6 @@ export default function Home() {
               className="border rounded p-2"
             />
           </div>
-
           <div className="flex flex-col">
             <label htmlFor="signers" className="mb-1 text-gray-600">
               Members:
@@ -203,13 +202,20 @@ export default function Home() {
               </span>
             )}
           </div>
-
           <button
             type="submit"
-            className="bg-green-500 text-white py-2 px-4 rounded"
+            className={`bg-green-500 text-white py-2 px-4 rounded ${
+              !accountId ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={!accountId}
           >
             Create Multisig Wallet
           </button>
+          {!accountId && (
+            <span className="text-red-500 mt-2">
+              Please sign in to create a multisig wallet.
+            </span>
+          )}
         </form>
       </div>
       <div className="flex justify-center w-full px-10">
